@@ -46,8 +46,13 @@ export function getCurrentDayAndTime(timezone?: string): { currentDay: DayOfWeek
     }
     
     const dayMap: { [key: string]: DayOfWeek } = {
-        'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4,
-        'Friday': 5, 'Saturday': 6, 'Sunday': 7
+        'Monday': 'MONDAY',
+        'Tuesday': 'TUESDAY',
+        'Wednesday': 'WEDNESDAY',
+        'Thursday': 'THURSDAY',
+        'Friday': 'FRIDAY',
+        'Saturday': 'SATURDAY',
+        'Sunday': 'SUNDAY'
     };
     
     const currentDay = dayMap[weekdayString] || 7; 
