@@ -13,8 +13,11 @@ import { MenuController } from './presentation/controllers/MenuController';
 import { productRoutes } from './presentation/routes/productRoutes';
 import { promotionRoutes } from './presentation/routes/promotionRoutes';
 import { menuRoutes } from './presentation/routes/menuRoutes';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './config/swagger.json';
 
 const app = express();
+const BASE_PATH = '/api/v1';
 
 async function main() {
     try {
@@ -30,14 +33,17 @@ async function main() {
         const promotionController = new PromotionController(promotionService);
         const menuController = new MenuController(productService); 
         
-        app.use('/api/v1/products', productRoutes(productController));
-        app.use('/api/v1/promotions', promotionRoutes(promotionController));
-        app.use('/api/v1/menu', menuRoutes(menuController));
+        app.use(`${BASE_PATH}/products`, productRoutes(productController));
+        app.use(`${BASE_PATH}/promotions`, promotionRoutes(promotionController));
+        app.use(`${BASE_PATH}/menu`, menuRoutes(menuController));
         app.listen(config.port, () => {
             console.log(`[Server] Express rodando em http://localhost:${config.port}`);
             console.log(`[Server] Ambiente: ${config.nodeEnv}`);
+            console.log(`[Docs] Documentação Swagger em http://localhost:${config.port}${BASE_PATH}/docs`); // Adiciona log
         });
         
+        app.use(`${BASE_PATH}/docs`, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
     } catch (error) {
         console.error("Falha fatal na inicialização da aplicação:", error);
         process.exit(1); 

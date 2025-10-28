@@ -17,8 +17,8 @@ export interface IPromotionDB {
   id: number;
   descricao: string;
   preco_promocional: number;
-  dia_semana_json: string;
+  dia_semana: string;
   horario_inicio: string;
   horario_fim: string;
-  related_product_ids?: number[];
+  product_id?: number; 
 }

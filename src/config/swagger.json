@@ -1,0 +1,185 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Goomer Menu - API Completa",
+        "version": "1.0.0",
+        "description": "Documentação das APIs de Promoções (Happy Hour), Produtos e Menu."
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3000/api/v1",
+            "description": "Servidor Local"
+        }
+    ],
+    "tags": [
+        { "name": "Promoções", "description": "Gerenciamento de promoções (Happy Hour)." },
+        { "name": "Produtos", "description": "Gerenciamento de itens do menu." },
+        { "name": "Menu", "description": "Consulta pública do menu com promoções ativas." }
+    ],
+    "paths": {
+        
+        "/promotions": {
+            "post": {
+                "summary": "Cria uma nova promoção",
+                "tags": ["Promoções"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PromotionInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "description": "Promoção criada com sucesso." },
+                    "400": { "description": "Dados inválidos ou falha na validação." }
+                }
+            },
+            "get": {
+                "summary": "Lista todas as promoções",
+                "tags": ["Promoções"],
+                "responses": {
+                    "200": {
+                        "description": "Lista de promoções.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/PromotionDB" }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/promotions/{id}": {
+            "parameters": [
+                { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" }, "description": "ID da promoção." }
+            ],
+            "put": {
+                "summary": "Atualiza uma promoção",
+                "tags": ["Promoções"],
+                "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PromotionInput" } } } },
+                "responses": { "200": { "description": "Promoção atualizada." }, "404": { "description": "Promoção não encontrada." } }
+            },
+            "delete": {
+                "summary": "Deleta uma promoção",
+                "tags": ["Promoções"],
+                "responses": { "200": { "description": "Promoção deletada." }, "404": { "description": "Promoção não encontrada." } }
+            }
+        },
+
+        "/products": {
+            "post": {
+                "summary": "Cria um novo produto/item de menu",
+                "tags": ["Produtos"],
+                "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProductInput" } } } },
+                "responses": { "201": { "description": "Produto criado." } }
+            },
+            "get": {
+                "summary": "Lista todos os produtos",
+                "tags": ["Produtos"],
+                "responses": {
+                    "200": {
+                        "description": "Lista de produtos.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/ProductDB" }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/products/{id}": {
+            "parameters": [
+                { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+            ],
+            "get": { "summary": "Busca um produto pelo ID", "tags": ["Produtos"], "responses": { "200": { "description": "Produto encontrado." }, "404": { "description": "Produto não encontrado." } } },
+            "put": { "summary": "Atualiza um produto", "tags": ["Produtos"], "responses": { "200": { "description": "Produto atualizado." } } },
+            "delete": { "summary": "Deleta um produto", "tags": ["Produtos"], "responses": { "200": { "description": "Produto deletado." } } }
+        },
+
+        "/menu": {
+            "get": {
+                "summary": "Gera o menu completo com promoções ativas",
+                "description": "Retorna a lista de produtos com o preço ajustado (preco_promocional) se houver um Happy Hour ativo no dia/horário da requisição.",
+                "tags": ["Menu"],
+                "responses": {
+                    "200": {
+                        "description": "Menu completo.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/MenuItem" }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    "components": {
+        "schemas": {
+            "PromotionInput": {
+                "type": "object",
+                "properties": {
+                    "titulo": { "type": "string", "example": "Happy Hour Chopp Gelado" },
+                    "descricao": { "type": "string", "example": "Promoção válida de 18:00h às 20:00h." },
+                    "preco_promocional": { "type": "number", "format": "float", "example": 7.99 },
+                    "dia_semana": { "type": "string", "enum": ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"], "example": "TUESDAY" },
+                    "horario_inicio": { "type": "string", "pattern": "^\\d{2}:\\d{2}$", "example": "18:00" },
+                    "horario_fim": { "type": "string", "pattern": "^\\d{2}:\\d{2}$", "example": "20:00" },
+                    "product_id": { "type": "integer", "example": 3 }
+                },
+                "required": ["titulo", "preco_promocional", "dia_semana", "horario_inicio", "horario_fim", "product_id"]
+            },
+            "PromotionDB": {
+                "type": "object",
+                "allOf": [
+                    { "$ref": "#/components/schemas/PromotionInput" },
+                    { "properties": { "id": { "type": "integer", "example": 1 } } }
+                ]
+            },
+
+            "ProductInput": {
+                "type": "object",
+                "properties": {
+                    "nome": { "type": "string", "example": "Chopp Pilsen" },
+                    "preco": { "type": "number", "format": "float", "example": 12.00 },
+                    "categoria": { "type": "string", "example": "Bebidas" },
+                    "status": { "type": "string", "enum": ["disponivel", "indisponivel"], "example": "disponivel" }
+                },
+                "required": ["nome", "preco"]
+            },
+            "ProductDB": {
+                "type": "object",
+                "allOf": [
+                    { "$ref": "#/components/schemas/ProductInput" },
+                    { "properties": { "id": { "type": "integer", "example": 3 } } }
+                ]
+            },
+
+            "MenuItem": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer", "example": 3 },
+                    "nome": { "type": "string", "example": "Chopp Pilsen" },
+                    "categoria": { "type": "string", "example": "Bebidas" },
+                    "preco_original": { "type": "number", "format": "float", "example": 12.00, "description": "Preço base do produto." },
+                    "preco_aplicado": { "type": "number", "format": "float", "example": 7.99, "description": "Preço final, ajustado pela promoção, se houver." },
+                    "promocao_ativa": { "type": "string", "nullable": true, "example": "Happy Hour Chopp Gelado", "description": "Título da promoção ativa, se houver." }
+                }
+            }
+        }
+    }
+}

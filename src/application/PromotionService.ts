@@ -39,8 +39,8 @@ export class PromotionService {
     }
 
     public async createPromotion(promotionData: IPromotionInput): Promise<number> {
-        this.validatePromotionData(promotionData); 
-    
+        this.validatePromotionData(promotionData);
+
         return this.promotionRepository.create(promotionData);
     }
 
@@ -52,8 +52,8 @@ export class PromotionService {
         if (!id) {
             throw new Error("ID da promoção é obrigatório para atualização.");
         }
-        
-        this.validatePromotionData(promotionData); 
+
+        this.validatePromotionData(promotionData);
 
         const success = await this.promotionRepository.update(id, promotionData);
         return success;
@@ -67,38 +67,57 @@ export class PromotionService {
         const success = await this.promotionRepository.delete(id);
         return success;
     }
-    
+
     public isPromotionActiveNow(promotion: IPromotionDB, timezone?: string): boolean {
         const { currentDay, currentTimeMinutes } = TimeUtils.getCurrentDayAndTime(timezone);
 
+        console.log(`[PromotionService] Verificando promoção: ${promotion.descricao}`);
+        console.log(`Dia atual: ${currentDay} | Dias ativos: ${promotion.dia_semana}`);
+        console.log(`Hora atual: ${currentTimeMinutes} min | Início: ${promotion.horario_inicio} | Fim: ${promotion.horario_fim}`);
+
         let activeDays: DayOfWeek[] = [];
 
-        if (promotion.dia_semana_json && promotion.dia_semana_json.toLowerCase() !== 'undefined') {
+        const diaSemanaField = (promotion as any).dia_semana_json || (promotion as any).dia_semana;
+
+        if (diaSemanaField && diaSemanaField.toLowerCase() !== 'undefined') {
             try {
-                activeDays = JSON.parse(promotion.dia_semana_json);
+                // Se for um JSON válido (ex: ["MONDAY","TUESDAY"])
+                if (diaSemanaField.trim().startsWith('[')) {
+                    activeDays = JSON.parse(diaSemanaField);
+                } else {
+                    // Se for apenas um dia simples (ex: "MONDAY")
+                    activeDays = [diaSemanaField.toUpperCase()];
+                }
             } catch (e) {
-                console.error(`[PromotionService] JSON malformado para promoção ID ${promotion.id}:`, promotion.dia_semana_json);
+                console.error(`[PromotionService] Erro ao interpretar dia_semana para promoção ID ${promotion.id}:`, diaSemanaField);
                 return false;
             }
         }
 
         if (!activeDays.includes(currentDay)) {
+            console.log("⛔ Promoção inativa: dia não incluso.");
             return false;
         }
 
         const startMinutes = TimeUtils.timeToMinutes(promotion.horario_inicio);
         const endMinutes = TimeUtils.timeToMinutes(promotion.horario_fim);
 
-        if (startMinutes > endMinutes) {
-            return currentTimeMinutes >= startMinutes || currentTimeMinutes < endMinutes;
-        } else {
-            return currentTimeMinutes >= startMinutes && currentTimeMinutes < endMinutes;
-        }
+        const isActive = startMinutes > endMinutes
+            ? currentTimeMinutes >= startMinutes || currentTimeMinutes < endMinutes
+            : currentTimeMinutes >= startMinutes && currentTimeMinutes < endMinutes;
+
+        console.log(isActive ? "✅ Promoção ativa!" : "⛔ Fora do horário.");
+
+        return isActive;
     }
 
     public isPromotionApplicableToProduct(promotion: IPromotionDB, productId: number): boolean {
-        const relatedProductIds: number[] = promotion.related_product_ids || [];
-
-        return relatedProductIds.includes(productId);
+        if (promotion.product_id && Number(promotion.product_id) === productId) {
+            console.log(`✅ Produto ${productId} vinculado à promoção ${promotion.descricao}`);
+            return true;
+        }
+        console.log(`⛔ Produto ${productId} não faz parte da promoção ${promotion.descricao}`);
+        return false;
     }
+    
 }
