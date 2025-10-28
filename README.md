@@ -66,9 +66,6 @@ Documentação da API disponível em:
 ```bash
 http://localhost:3000/api/v1/docs
 ```
-
-
-
 ## Desafios
 
 Os maiores desafios encontrados durante a construção foram relacionados ao menu, parte de integrar as duas tabelas, promoção e produto. Principalmente em retornar valores promocionais e dia e hora para que a promoção ficasse disponível durante aquele período de tempo.
