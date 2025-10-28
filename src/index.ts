@@ -1,5 +1,3 @@
-// src/index.ts (Exemplo simplificado)
-
 import express from 'express';
 import { config } from './config/env';
 import { connectDatabase } from './infrastructure/database/connection';
@@ -39,7 +37,7 @@ async function main() {
         app.listen(config.port, () => {
             console.log(`[Server] Express rodando em http://localhost:${config.port}`);
             console.log(`[Server] Ambiente: ${config.nodeEnv}`);
-            console.log(`[Docs] Documentação Swagger em http://localhost:${config.port}${BASE_PATH}/docs`); // Adiciona log
+            console.log(`[Docs] Documentação Swagger em http://localhost:${config.port}${BASE_PATH}/docs`); 
         });
         
         app.use(`${BASE_PATH}/docs`, swaggerUi.serve, swaggerUi.setup(swaggerSpec));

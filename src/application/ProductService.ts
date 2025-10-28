@@ -36,28 +36,23 @@ export class ProductService {
     }
 
     public async getConsolidatedMenu(timezone?: string): Promise<IMenuItem[]> {
-        // 1️⃣ Buscar todos os produtos visíveis
         const visibleProducts = await this.productRepository.findVisible();
 
         if (visibleProducts.length === 0) {
             return [];
         }
 
-        // 2️⃣ Buscar todas as promoções existentes
         const promotions = await this.promotionService.listAllPromotions();
 
-        // 3️⃣ Filtrar promoções ativas (respeitando timezone se houver)
         const activePromotions = promotions.filter(p =>
             this.promotionService.isPromotionActiveNow(p, timezone)
         );
 
-        // 4️⃣ Montar o menu consolidado
         const menu: IMenuItem[] = visibleProducts.map(product => {
             const applicablePromotion: IPromotionDB | undefined = activePromotions.find(promo =>
                 this.promotionService.isPromotionApplicableToProduct(promo, product.id)
             );
 
-            // Construir item do menu
             const precoBase = product.preco;
             const precoPromocional = applicablePromotion?.preco_promocional ?? precoBase;
 
@@ -79,7 +74,6 @@ export class ProductService {
             };
         });
 
-        // 5️⃣ Ordenar o cardápio pela ordem configurada
         menu.sort((a, b) => a.ordem - b.ordem);
 
         return menu;

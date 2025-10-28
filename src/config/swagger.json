@@ -172,14 +172,48 @@
             "MenuItem": {
                 "type": "object",
                 "properties": {
-                    "id": { "type": "integer", "example": 3 },
-                    "nome": { "type": "string", "example": "Chopp Pilsen" },
-                    "categoria": { "type": "string", "example": "Bebidas" },
-                    "preco_original": { "type": "number", "format": "float", "example": 12.00, "description": "Preço base do produto." },
-                    "preco_aplicado": { "type": "number", "format": "float", "example": 7.99, "description": "Preço final, ajustado pela promoção, se houver." },
-                    "promocao_ativa": { "type": "string", "nullable": true, "example": "Happy Hour Chopp Gelado", "description": "Título da promoção ativa, se houver." }
-                }
-            }
+                  "id": { 
+                    "type": "integer", 
+                    "example": 2 
+                  },
+                  "nome": { 
+                    "type": "string", 
+                    "example": "Hambúrguer Clássico" 
+                  },
+                  "categoria": { 
+                    "type": "string", 
+                    "example": "LANCHE" 
+                  },
+                  "precoBase": { 
+                    "type": "number", 
+                    "format": "float", 
+                    "example": 25.50, 
+                    "description": "Preço base do produto." 
+                  },
+                  "precoFinal": { 
+                    "type": "number", 
+                    "format": "float", 
+                    "example": 8.99, 
+                    "description": "Preço final do produto, ajustado pela promoção se houver." 
+                  },
+                  "promocaoAtiva": { 
+                    "type": "object", 
+                    "nullable": true,
+                    "description": "Informações da promoção ativa aplicada ao produto, se houver.",
+                    "properties": {
+                      "descricao": { "type": "string", "example": "Preço promocional no Chopp Pilsen das 18h às 20h, de terça a quinta." },
+                      "precoPromocional": { "type": "number", "format": "float", "example": 8.99 },
+                      "inicio": { "type": "string", "example": "08:00:00" },
+                      "fim": { "type": "string", "example": "20:00:00" }
+                    }
+                  },
+                  "ordem": { 
+                    "type": "integer", 
+                    "example": 1 
+                  }
+                },
+                "required": ["id", "nome", "categoria", "precoBase", "precoFinal", "ordem"]
+              }              
         }
     }
 }

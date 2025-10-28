@@ -46,11 +46,10 @@ export class PromotionRepository {
     
         const [rows] = await dbPool.execute<PromotionRow[]>(sql);
     
-        // Mapear direto para IPromotionDB, garantindo que product_id esteja incluído
         const promotions: IPromotionDB[] = rows.map(row => ({
             id: row.id,
             descricao: row.descricao,
-            titulo: row.titulo,              // caso queira manter o título
+            titulo: row.titulo,    
             preco_promocional: row.preco_promocional,
             dia_semana: row.dia_semana,
             horario_inicio: row.horario_inicio,

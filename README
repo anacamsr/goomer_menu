@@ -1,0 +1,68 @@
+
+# Desafio Goomer Menu API
+
+Este repositório contém o desafio proposto pela Goomer. API capaz de gerenciar os produtos, promoções e o cardápio de um restaurante.
+
+
+## Stack utilizada
+
+**Linguagem:** TypeScript ^4.x
+
+**Framework:** Express
+
+**Banco de dados:** MySQL
+
+**Migrations:** ORM
+
+**Node.js:** ^18.x
+
+
+## Instalação
+
+Siga os passos abaixo para ter o projeto rodando em sua máquina local.
+
+**Pré-requisitos**
+
+- **Node.js** 18.x.
+
+- **npm** (gerenciador de pacotes)
+
+- **MySQL**
+
+Instale as dependências:
+```bash
+npm install
+```
+
+**Configuracao do .env**
+
+Crie um arquivo .env na raiz do projeto com suas variáveis, por exemplo:
+
+```bash
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=senha
+DB_NAME=goomer_menu
+PORT=3000
+```
+Crie o banco de dados no MySQL (se ainda não existir):
+
+```bash
+CREATE DATABASE goomer_menu;
+```
+
+Rodar a aplicação localmente:
+
+```bash
+npm run dev:watch
+
+```
+A API estará disponível em:
+```bash
+http://localhost:3000
+```
+Documentação da API disponível em: 
+```bash
+http://localhost:3000/api/v1/docs
+```
